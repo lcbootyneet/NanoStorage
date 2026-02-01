@@ -25,13 +25,25 @@ Store up to **10x more data** in LocalStorage with browser-native GZIP compressi
 
 ## 📊 Performance Comparison
 
-| Metric | lz-string | **NanoStorage** |
-|--------|-----------|-----------------|
-| Engine | JavaScript (Slow) | C++ / Browser Native (Fast) |
-| UI Blocking | Yes (freezes on large data) | No (async streams) |
+### Benchmark Results (5 MB JSON, Chrome)
+
+| Metric | NanoStorage | lz-string | Winner |
+|--------|-------------|-----------|--------|
+| **Compress Time** | 85.5 ms | 1.18 s | 🏆 **13.8x faster** |
+| **Decompress Time** | 55.4 ms | 49.6 ms | ~same |
+| **Compressed Size** | 70.4 KB | 168.5 KB | 🏆 **2.4x smaller** |
+| **Compression Ratio** | 98.6% | 96.6% | 🏆 NanoStorage |
+
+> 💡 **5 MB JSON → 70 KB** in just 85ms. lz-string takes over 1 second for the same job.
+
+### Why So Fast?
+
+| Feature | lz-string | NanoStorage |
+|---------|-----------|-------------|
+| Engine | JavaScript (Main Thread) | C++ (Browser Native) |
+| UI Blocking | ❌ Yes, freezes on big data | ✅ No, async streams |
 | Bundle Size | ~18 KB | **< 1 KB** |
-| Algorithm | LZW (Legacy) | GZIP / Deflate (Industry Standard) |
-| Compression Ratio | ~60% | **~85-90%** |
+| Algorithm | LZW (1984) | GZIP/Deflate (Industry Standard) |
 
 ### Real-World Example
 
