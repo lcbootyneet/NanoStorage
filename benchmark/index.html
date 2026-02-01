@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NanoStorage Benchmark - Compression Performance Demo</title>
+  <style>
+    :root {
+      --bg-dark: #0f0f23;
+      --bg-card: #1a1a2e;
+      --bg-input: #16213e;
+      --primary: #00d9ff;
+      --secondary: #7c3aed;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: rgba(255, 255, 255, 0.1);
+      --glow: 0 0 20px rgba(0, 217, 255, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 0;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(0, 217, 255, 0.2));
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.25rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--glow);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .card-icon.nano {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+
+    .card-icon.lz {
+      background: linear-gradient(135deg, var(--warning), var(--danger));
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .card-badge {
+      margin-left: auto;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-native {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .badge-js {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .stat {
+      background: var(--bg-input);
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .controls {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .controls-header {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .control-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .control-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .control-label {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn {
+      padding: 0.75rem 2rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--glow);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .results {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .results-header {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .progress-container {
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-bar {
+      height: 24px;
+      background: var(--bg-input);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 12px;
+      transition: width 0.5s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      min-width: 60px;
+    }
+
+    .progress-fill.nano {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .progress-fill.lz {
+      background: linear-gradient(90deg, var(--warning), var(--danger));
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .log {
+      background: var(--bg-input);
+      border-radius: 10px;
+      padding: 1rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.875rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      padding: 0.25rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+
+    .log-time {
+      color: var(--text-muted);
+    }
+
+    .log-success {
+      color: var(--success);
+    }
+
+    .log-error {
+      color: var(--danger);
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comparison-table th {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .winner {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .loser {
+      color: var(--text-muted);
+    }
+
+    .speedup {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .loading {
+      animation: pulse 1.5s infinite;
+    }
+
+    .browser-warning {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid var(--warning);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>🗜️ NanoStorage</h1>
+      <p class="subtitle">Browser-Native Compression vs JavaScript Compression</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="browserWarning" class="browser-warning hidden">
+      <span>⚠️</span>
+      <span>Your browser doesn't support CompressionStream API. NanoStorage requires Chrome 80+, Firefox 113+, or Safari 16.4+.</span>
+    </div>
+
+    <div class="controls">
+      <h2 class="controls-header">⚙️ Test Configuration</h2>
+      <div class="control-row">
+        <div class="control-group">
+          <label class="control-label">Data Size</label>
+          <select id="dataSize">
+            <option value="1">1 KB</option>
+            <option value="10">10 KB</option>
+            <option value="100" selected>100 KB</option>
+            <option value="500">500 KB</option>
+            <option value="1000">1 MB</option>
+            <option value="5000">5 MB</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label class="control-label">Data Type</label>
+          <select id="dataType">
+            <option value="json" selected>JSON Object (Repetitive)</option>
+            <option value="random">Random String</option>
+            <option value="mixed">Mixed Content</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label class="control-label">Iterations</label>
+          <select id="iterations">
+            <option value="1">1</option>
+            <option value="3" selected>3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+        <button id="runBtn" class="btn btn-primary">
+          <span>▶</span> Run Benchmark
+        </button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon nano">🚀</div>
+          <span class="card-title">NanoStorage</span>
+          <span class="card-badge badge-native">Native</span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat">
+            <div class="stat-value" id="nanoTime">-</div>
+            <div class="stat-label">Compress Time</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="nanoDecompTime">-</div>
+            <div class="stat-label">Decompress Time</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="nanoSize">-</div>
+            <div class="stat-label">Compressed Size</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="nanoRatio">-</div>
+            <div class="stat-label">Compression Ratio</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon lz">📦</div>
+          <span class="card-title">lz-string</span>
+          <span class="card-badge badge-js">JavaScript</span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat">
+            <div class="stat-value" id="lzTime">-</div>
+            <div class="stat-label">Compress Time</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="lzDecompTime">-</div>
+            <div class="stat-label">Decompress Time</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="lzSize">-</div>
+            <div class="stat-label">Compressed Size</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="lzRatio">-</div>
+            <div class="stat-label">Compression Ratio</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results">
+      <h2 class="results-header">📊 Results Comparison</h2>
+      
+      <div class="progress-container">
+        <div class="progress-label">
+          <span>Compression Speed</span>
+          <span id="speedupLabel"></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill nano" id="nanoBar" style="width: 0%"></div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill lz" id="lzBar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <table class="comparison-table" id="comparisonTable">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>NanoStorage</th>
+            <th>lz-string</th>
+            <th>Winner</th>
+          </tr>
+        </thead>
+        <tbody id="comparisonBody">
+          <tr>
+            <td colspan="4" style="text-align: center; color: var(--text-muted);">
+              Run the benchmark to see results
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="log" id="log">
+        <div class="log-entry">
+          <span class="log-time">[Ready]</span> Click "Run Benchmark" to start the performance test
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- lz-string library -->
+  <script src="https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js"></script>
+
+  <script type="module">
+    // NanoStorage core functions (embedded for demo)
+    const MARKERS = { RAW: 'R', GZIP: 'G', DEFLATE: 'D' };
+
+    function isSupported() {
+      return typeof CompressionStream !== 'undefined' && typeof DecompressionStream !== 'undefined';
+    }
+
+    async function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result;
+          const base64 = result.split(',')[1];
+          resolve(base64 || '');
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function base64ToUint8Array(base64) {
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes;
+    }
+
+    async function nanoCompress(data) {
+      const jsonString = JSON.stringify(data);
+      const stream = new Blob([jsonString]).stream();
+      const compressedStream = stream.pipeThrough(new CompressionStream('gzip'));
+      const compressedBlob = await new Response(compressedStream).blob();
+      const base64 = await blobToBase64(compressedBlob);
+      return MARKERS.GZIP + base64;
+    }
+
+    async function nanoDecompress(compressedString) {
+      const marker = compressedString[0];
+      const payload = compressedString.slice(1);
+      
+      if (marker === MARKERS.RAW) {
+        return JSON.parse(payload);
+      }
+      
+      const algorithm = marker === MARKERS.GZIP ? 'gzip' : 'deflate';
+      const bytes = base64ToUint8Array(payload);
+      const stream = new Blob([bytes]).stream();
+      const decompressedStream = stream.pipeThrough(new DecompressionStream(algorithm));
+      const text = await new Response(decompressedStream).text();
+      return JSON.parse(text);
+    }
+
+    // DOM Elements
+    const runBtn = document.getElementById('runBtn');
+    const dataSizeSelect = document.getElementById('dataSize');
+    const dataTypeSelect = document.getElementById('dataType');
+    const iterationsSelect = document.getElementById('iterations');
+    const logEl = document.getElementById('log');
+    const browserWarning = document.getElementById('browserWarning');
+
+    // Check browser support
+    if (!isSupported()) {
+      browserWarning.classList.remove('hidden');
+      runBtn.disabled = true;
+    }
+
+    // Generate test data
+    function generateData(sizeKB, type) {
+      const targetBytes = sizeKB * 1024;
+      
+      if (type === 'json') {
+        const items = [];
+        const itemTemplate = {
+          id: 12345,
+          name: 'Product Name Here',
+          description: 'This is a sample product description that will be repeated many times to create realistic test data for compression benchmarks.',
+          price: 99.99,
+          inStock: true,
+          tags: ['category1', 'category2', 'featured'],
+          metadata: { created: '2024-01-01', updated: '2024-01-15' }
+        };
+        
+        while (JSON.stringify(items).length < targetBytes) {
+          items.push({ ...itemTemplate, id: items.length });
+        }
+        return items;
+      }
+      
+      if (type === 'random') {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < targetBytes; i++) {
+          result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+      }
+      
+      // Mixed content
+      return {
+        text: 'a'.repeat(targetBytes / 4),
+        numbers: Array(Math.floor(targetBytes / 20)).fill(0).map((_, i) => i),
+        nested: {
+          deep: {
+            value: 'x'.repeat(targetBytes / 4)
+          }
+        }
+      };
+    }
+
+    function log(message, type = '') {
+      const time = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `<span class="log-time">[${time}]</span> <span class="log-${type}">${message}</span>`;
+      logEl.appendChild(entry);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    function formatTime(ms) {
+      if (ms < 1) return '<1 ms';
+      if (ms < 1000) return ms.toFixed(1) + ' ms';
+      return (ms / 1000).toFixed(2) + ' s';
+    }
+
+    async function runBenchmark() {
+      runBtn.disabled = true;
+      logEl.innerHTML = '';
+      
+      const sizeKB = parseInt(dataSizeSelect.value);
+      const dataType = dataTypeSelect.value;
+      const iterations = parseInt(iterationsSelect.value);
+      
+      log(`Starting benchmark: ${sizeKB} KB ${dataType} data, ${iterations} iterations`);
+      
+      // Generate data
+      log('Generating test data...');
+      const data = generateData(sizeKB, dataType);
+      const originalJson = JSON.stringify(data);
+      const originalSize = new TextEncoder().encode(originalJson).length;
+      log(`Original size: ${formatBytes(originalSize)}`, 'success');
+      
+      // NanoStorage benchmark
+      let nanoTimes = [];
+      let nanoDecompTimes = [];
+      let nanoCompressed = '';
+      
+      log('Running NanoStorage compression...');
+      for (let i = 0; i < iterations; i++) {
+        const start = performance.now();
+        nanoCompressed = await nanoCompress(data);
+        nanoTimes.push(performance.now() - start);
+        
+        const decompStart = performance.now();
+        await nanoDecompress(nanoCompressed);
+        nanoDecompTimes.push(performance.now() - decompStart);
+      }
+      
+      const nanoAvgTime = nanoTimes.reduce((a, b) => a + b, 0) / iterations;
+      const nanoAvgDecompTime = nanoDecompTimes.reduce((a, b) => a + b, 0) / iterations;
+      const nanoSize = new TextEncoder().encode(nanoCompressed).length;
+      const nanoRatio = ((1 - nanoSize / originalSize) * 100).toFixed(1);
+      
+      log(`NanoStorage: ${formatTime(nanoAvgTime)} compress, ${formatBytes(nanoSize)} (${nanoRatio}% reduction)`, 'success');
+      
+      // lz-string benchmark
+      let lzTimes = [];
+      let lzDecompTimes = [];
+      let lzCompressed = '';
+      
+      log('Running lz-string compression...');
+      for (let i = 0; i < iterations; i++) {
+        const start = performance.now();
+        lzCompressed = LZString.compressToBase64(originalJson);
+        lzTimes.push(performance.now() - start);
+        
+        const decompStart = performance.now();
+        LZString.decompressFromBase64(lzCompressed);
+        lzDecompTimes.push(performance.now() - decompStart);
+      }
+      
+      const lzAvgTime = lzTimes.reduce((a, b) => a + b, 0) / iterations;
+      const lzAvgDecompTime = lzDecompTimes.reduce((a, b) => a + b, 0) / iterations;
+      const lzSize = new TextEncoder().encode(lzCompressed).length;
+      const lzRatio = ((1 - lzSize / originalSize) * 100).toFixed(1);
+      
+      log(`lz-string: ${formatTime(lzAvgTime)} compress, ${formatBytes(lzSize)} (${lzRatio}% reduction)`, 'success');
+      
+      // Update UI
+      document.getElementById('nanoTime').textContent = formatTime(nanoAvgTime);
+      document.getElementById('nanoDecompTime').textContent = formatTime(nanoAvgDecompTime);
+      document.getElementById('nanoSize').textContent = formatBytes(nanoSize);
+      document.getElementById('nanoRatio').textContent = nanoRatio + '%';
+      
+      document.getElementById('lzTime').textContent = formatTime(lzAvgTime);
+      document.getElementById('lzDecompTime').textContent = formatTime(lzAvgDecompTime);
+      document.getElementById('lzSize').textContent = formatBytes(lzSize);
+      document.getElementById('lzRatio').textContent = lzRatio + '%';
+      
+      // Update progress bars
+      const maxTime = Math.max(nanoAvgTime, lzAvgTime);
+      document.getElementById('nanoBar').style.width = (nanoAvgTime / maxTime * 100) + '%';
+      document.getElementById('nanoBar').textContent = formatTime(nanoAvgTime);
+      document.getElementById('lzBar').style.width = (lzAvgTime / maxTime * 100) + '%';
+      document.getElementById('lzBar').textContent = formatTime(lzAvgTime);
+      
+      // Speedup
+      const speedup = (lzAvgTime / nanoAvgTime).toFixed(1);
+      document.getElementById('speedupLabel').innerHTML = 
+        nanoAvgTime < lzAvgTime 
+          ? `<span class="speedup">NanoStorage ${speedup}x faster</span>`
+          : `<span class="speedup">lz-string ${(nanoAvgTime / lzAvgTime).toFixed(1)}x faster</span>`;
+      
+      // Update comparison table
+      const tbody = document.getElementById('comparisonBody');
+      tbody.innerHTML = `
+        <tr>
+          <td>Compression Time</td>
+          <td class="${nanoAvgTime <= lzAvgTime ? 'winner' : 'loser'}">${formatTime(nanoAvgTime)}</td>
+          <td class="${lzAvgTime < nanoAvgTime ? 'winner' : 'loser'}">${formatTime(lzAvgTime)}</td>
+          <td>${nanoAvgTime <= lzAvgTime ? '🏆 NanoStorage' : '🏆 lz-string'}</td>
+        </tr>
+        <tr>
+          <td>Decompression Time</td>
+          <td class="${nanoAvgDecompTime <= lzAvgDecompTime ? 'winner' : 'loser'}">${formatTime(nanoAvgDecompTime)}</td>
+          <td class="${lzAvgDecompTime < nanoAvgDecompTime ? 'winner' : 'loser'}">${formatTime(lzAvgDecompTime)}</td>
+          <td>${nanoAvgDecompTime <= lzAvgDecompTime ? '🏆 NanoStorage' : '🏆 lz-string'}</td>
+        </tr>
+        <tr>
+          <td>Compressed Size</td>
+          <td class="${nanoSize <= lzSize ? 'winner' : 'loser'}">${formatBytes(nanoSize)}</td>
+          <td class="${lzSize < nanoSize ? 'winner' : 'loser'}">${formatBytes(lzSize)}</td>
+          <td>${nanoSize <= lzSize ? '🏆 NanoStorage' : '🏆 lz-string'}</td>
+        </tr>
+        <tr>
+          <td>Compression Ratio</td>
+          <td class="${parseFloat(nanoRatio) >= parseFloat(lzRatio) ? 'winner' : 'loser'}">${nanoRatio}%</td>
+          <td class="${parseFloat(lzRatio) > parseFloat(nanoRatio) ? 'winner' : 'loser'}">${lzRatio}%</td>
+          <td>${parseFloat(nanoRatio) >= parseFloat(lzRatio) ? '🏆 NanoStorage' : '🏆 lz-string'}</td>
+        </tr>
+      `;
+      
+      log('✅ Benchmark complete!', 'success');
+      runBtn.disabled = false;
+    }
+
+    runBtn.addEventListener('click', runBenchmark);
+  </script>
+</body>
+</html>

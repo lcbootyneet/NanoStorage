@@ -1,0 +1,78 @@
+{
+  "name": "@qantesm/nanostorage",
+  "version": "1.0.0",
+  "description": "High-performance LocalStorage compression using native CompressionStream API. Zero-dependency, < 1KB, non-blocking.",
+  "author": {
+    "name": "Muhammet Ali Büyük",
+    "url": "https://github.com/qanteSm"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qanteSm/NanoStorage.git"
+  },
+  "bugs": {
+    "url": "https://github.com/qanteSm/NanoStorage/issues"
+  },
+  "homepage": "https://github.com/qanteSm/NanoStorage#readme",
+  "keywords": [
+    "localstorage",
+    "compression",
+    "gzip",
+    "deflate",
+    "storage",
+    "async",
+    "web-api",
+    "compression-stream",
+    "pwa",
+    "cache",
+    "state-management",
+    "zero-dependency",
+    "lightweight"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "size": "size-limit",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^11.0.0",
+    "@types/node": "^20.10.0",
+    "eslint": "^8.55.0",
+    "happy-dom": "^12.10.0",
+    "prettier": "^3.1.0",
+    "size-limit": "^11.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "size-limit": [
+    {
+      "path": "dist/index.mjs",
+      "limit": "1 KB"
+    }
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
